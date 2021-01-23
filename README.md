@@ -80,9 +80,9 @@ pip install git+https://github.com/DarshanDeshpande/Scrapera.git
 
 To use any sub-module, you just need to import, instantiate and execute
 ```python
-from Scrapera.Video import VimeoScraper
-scraper = VimeoScraper(out_path='path/to/output/directory')
-scraper.scrape(url='https://vimeo.com/191955190', quality='720p')
+from scrapera.video.vimeo import VimeoScraper
+scraper = VimeoScraper()
+scraper.scrape('https://vimeo.com/191955190', '540p')
 ```
 
 _For more examples, please refer to the individual test folders in respective modules_
