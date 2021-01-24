@@ -43,7 +43,7 @@ class InstagramImageScraper:
         urllib_proxies:  [Optional] dict, Proxy information for urllib requests
         '''
         if urllib_proxies:
-            assert type(urllib_proxies) == dict, "Input to 'urllib_proxies' should be a dictionary"
+            assert type(urllib_proxies) is dict, "Input to 'urllib_proxies' should be a dictionary"
         if out_path:
             assert os.path.isdir(out_path), "Invalid output directory"
         assert type(resize) in [list, tuple, set] and len(
