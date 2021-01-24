@@ -83,7 +83,6 @@ To use any sub-module, you just need to import, instantiate and execute
 from scrapera.video.vimeo import VimeoScraper
 scraper = VimeoScraper()
 scraper.scrape('https://vimeo.com/191955190', '540p')
-
 ```
 
 _For more examples, please refer to the individual test folders in respective modules_
