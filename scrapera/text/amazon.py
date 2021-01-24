@@ -44,7 +44,7 @@ class AmazonReviewScraper:
             a_tags = self.driver.find_elements_by_class_name('a-link-normal')
             for a_tag in a_tags:
                 href = a_tag.get_attribute('href')
-                flag = True if re.findall(r's[/]?\?k=', href) != [] else False
+                flag = re.findall(r's[/]?\?k=', href) != []
                 if 'customerReviews' not in href and not flag \
                         and 'help' not in href and 'amazon-adsystem' not in href:
                     all_links.add(href)
