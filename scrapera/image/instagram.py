@@ -8,7 +8,8 @@ from PIL import Image
 
 
 class InstagramImageScraper:
-    def _extract_image(self, json_response, out_path=None, resize=None):
+    @staticmethod
+    def _extract_image(json_response, out_path=None, resize=None):
         name_of_file = str(json_response['graphql']['shortcode_media']['owner']['username']) + '_' + str(
             json_response['graphql']['shortcode_media']['id'])
         img_link = json_response['graphql']['shortcode_media']['display_resources'][-1]['src']

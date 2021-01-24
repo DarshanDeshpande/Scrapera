@@ -7,7 +7,8 @@ import urllib
 
 
 class InstagramCommentsScraper:
-    def _extract_get_comments_data(self, json_response):
+    @staticmethod
+    def _extract_get_comments_data(json_response):
         comments_list, usernames_list, timestamps_list = [], [], []
         for node in json_response['graphql']['shortcode_media']['edge_media_to_parent_comment']['edges']:
             comments_list.append(node['node']['text'].encode('utf-8', 'replace').decode())
