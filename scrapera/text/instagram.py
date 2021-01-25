@@ -1,12 +1,16 @@
-import os
-
-import pandas as pd
+import csv
 import json
-import urllib.request
+import os
 import urllib
+import urllib.request
 
 
 class InstagramCommentsScraper:
+    '''
+    Scraper for Instagram Comments.
+    This implementation is broken due to recent GraphQL changes and only around 25 comments can be scraped as of now
+    '''
+
     def _extract_get_comments_data(self, json_response):
         comments_list, usernames_list, timestamps_list = [], [], []
         for node in json_response['graphql']['shortcode_media']['edge_media_to_parent_comment']['edges']:
@@ -30,7 +34,8 @@ class InstagramCommentsScraper:
         json_response = json.load(response)
 
         texts, usernames, timestamp = self._extract_get_comments_data(json_response)
-        return texts, usernames, timestamp, len(texts)
+
+        return timestamp, texts, usernames
 
     def scrape(self, url, out_path=None, urllib_proxies=None):
         '''
@@ -39,7 +44,11 @@ class InstagramCommentsScraper:
         out_path:  [Optional] str, Path to output directory. If unspecified, current directory will be used
         urllib_proxies:  [Optional] dict, Proxy information for urllib requests
         '''
-        texts, usernames, timestamps, length = self._extract_post_json(url, urllib_proxies)
-        df = pd.DataFrame({'text': texts, 'username': usernames, 'timestamp': timestamps})
-        df.to_csv('ScrapedComments.csv' if out_path is None else os.path.join(out_path, 'ScrapedComments.csv'),
-                  index=False)
+        data = self._extract_post_json(url, urllib_proxies)
+
+        with open('ScrapedComments.csv' if out_path is None else os.path.join(out_path, 'ScrapedComments.csv'), 'a+',
+                  encoding='utf-8', newline='') as f:
+            writer = csv.writer(f, delimiter=',')
+            writer.writerow(['Timestamp', 'Text', 'Username'])
+            for row in zip(*data):
+                writer.writerow(row)

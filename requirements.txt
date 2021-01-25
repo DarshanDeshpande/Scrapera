@@ -1,6 +1,4 @@
 bs4
-numpy
-pandas
 beautifulsoup4
 certifi
 chardet

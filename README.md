@@ -41,11 +41,39 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-Scrapera provides access to a variety of scraper scripts for most commonly used machine learning and data science domains, mainly consisting of scrapers for 
-<li>Images</li>
-<li>Text</li>
-<li>Audio</li>
-<li>Videos</li>
+Scrapera provides access to a variety of scraper scripts for most commonly used machine learning and data science domains. Currently, Scrapera supports the following crawlers: 
+<li>Images
+    <ul>
+        <li><a href="https://github.com/DarshanDeshpande/Scrapera/blob/master/scrapera/image/duckduckgo.py">DuckDuckGo Scraper</a></li>
+        <li><a href="https://github.com/DarshanDeshpande/Scrapera/blob/master/scrapera/image/giphy.py">GIPHY Scraper</a></li>
+        <li><a href="https://github.com/DarshanDeshpande/Scrapera/blob/master/scrapera/image/instagram.py">Instagram Posts Scraper</a></li>
+    </ul>
+</li>
+<li>Text
+    <ul>
+        <li><a href="https://github.com/DarshanDeshpande/Scrapera/blob/master/scrapera/text/amazon.py">Amazon Product Reviews</a></li>
+        <li><a href="https://github.com/DarshanDeshpande/Scrapera/blob/master/scrapera/text/voice_of_america.py">Voice of America News Scraper</a></li>
+        <li><a href="https://github.com/DarshanDeshpande/Scrapera/blob/master/scrapera/text/scroll_news.py">Scroll News Scraper</a></li>
+        <li><a href="https://github.com/DarshanDeshpande/Scrapera/blob/master/scrapera/text/instagram.py">Instagram Comments Scraper</a></li>
+    </ul>
+</li>
+<li>Audio
+    <ul>
+        <li><a href="https://github.com/DarshanDeshpande/Scrapera/blob/master/scrapera/audio/youtube_playlist_scraper.py">Youtube Playlist Scraper</a></li>
+    </ul>
+</li>
+<li>Videos
+    <ul>
+        <li><a href="https://github.com/DarshanDeshpande/Scrapera/blob/master/scrapera/video/vimeo.py">Vimeo Scraper</a></li>
+        <li><a href="https://github.com/DarshanDeshpande/Scrapera/blob/master/scrapera/video/youtube.py">Youtube Scraper</a></li>
+    </ul>
+</li>
+
+<li>Miscellaneous
+    <ul>
+        <li><a href="https://github.com/DarshanDeshpande/Scrapera/blob/master/scrapera/miscellaneous/yahoo_stocks.py">Yahoo Stocks Scraper</a></li>
+    </ul>
+</li>
 <br>
 This main aim of this package is to cluster common scraping tasks so as to make it more convenient for ML researchers and engineers to focus on their models rather than worrying about the data collection process 
 <br><br/>
@@ -94,7 +122,9 @@ _For more examples, please refer to the individual test folders in respective mo
 
 <summary>Known issues</summary>
 <ul>
-    Instagram Comments Scraper needs updation due to GraphQL changes
+    <li>
+        Instagram Comments Scraper needs updation due to recent GraphQL implementation changes
+    </li>
 </ul>
 
 
@@ -102,6 +132,8 @@ _For more examples, please refer to the individual test folders in respective mo
 ## Contributing
 
 Scrapera welcomes any and all contributions and scraper requests. Feel free to fork the repository and add your own scrapers to help the community!
+<br>
+For more guidelines, refer to `CONTRIBUTING`
 
 
 <!-- LICENSE -->
