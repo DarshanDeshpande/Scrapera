@@ -81,12 +81,14 @@ class VOAScraper:
             except Exception:
                 continue
 
-    def scrape(self, num_scrolls=1):
+    def scrape(self, num_scrolls=1, sleep=3):
         '''
         Scraper function for Voice of America News articles
         num_scrolls: int, Number of times to fetch more entries. Default is 1
+        sleep: Amount of time to sleep to avoid excessive requests or blocking. Default: 3
         '''
         assert (type(num_scrolls) == int and num_scrolls >= 0), "Number of scrolls cannot be negative"
+        assert sleep >= 0, "Sleep time cannot be negative"
         all_links = self._get_links(num_scrolls)
         self._get_article_content(all_links)
         self.conn.close()

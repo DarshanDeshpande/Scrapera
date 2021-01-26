@@ -19,7 +19,7 @@ class PlaylistScraper:
         out_path: [Optional] Path to the output directory. If unspecified, current directory is used
     '''
     def __init__(self, url, bitrate, out_path):
-        assert type(bitrate) == int and bitrate in [16, 24, 32, 48, 56, 64, 96, 128, 160, 192, 256, 320],\
+        assert type(bitrate) is int and bitrate in [16, 24, 32, 48, 56, 64, 96, 128, 160, 192, 256, 320],\
             "Bitrate must be one of [16,24,32,48,56,64,96,128,160,192,256,320]"
 
         self.url = url

@@ -45,7 +45,7 @@ class GiphyScraper:
 
         return links
 
-    def _get_gifs(self, query, all_links, out_path=None):
+    def _get_gifs(self, query, all_links, sleep=3, out_path=None):
         if self.proxy:
             handler = urllib.request.ProxyHandler(self.proxy)
             opener = urllib.request.build_opener(handler)
@@ -61,18 +61,21 @@ class GiphyScraper:
             im.info.pop('background', None)
             im.save(f'{path}.gif', 'gif', save_all=True)
             os.remove(path + '.webp')
+            print(f"Sleeping for {sleep} seconds to avoid excessive requests")
+            time.sleep(sleep)
         print("Finished Downloading")
         print("-" * 75)
 
-    def scrape(self, query, num_scrolls, out_path=None):
+    def scrape(self, query, num_scrolls, sleep=3, out_path=None):
         '''
         query: str, Keywords used for fetching
         num_scrolls: int, Number of times to fetch more entries
+        sleep: Amount of time(seconds) to sleep while fetching to avoid excessive retries or blocking.
         out_path:  [Optional] str, Path to output directory. If unspecified, current directory will be used
         '''
         query = str(query).replace(' ', '+')
         if out_path is not None:
             out_path = out_path if os.path.isdir(out_path) else None
         all_links = self._get_links(query, num_scrolls)
-        self._get_gifs(query, all_links, out_path)
+        self._get_gifs(query, all_links, sleep, out_path)
         self.driver.close()

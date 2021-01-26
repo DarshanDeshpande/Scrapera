@@ -58,7 +58,7 @@ class ScrollScraper:
 
         return links_list
 
-    def _get_article_content(self, all_links):
+    def _get_article_content(self, all_links, sleep=3):
         for link in tqdm(all_links):
             req = urllib.request.Request(link)
             req.add_header('User-Agent',
@@ -67,6 +67,7 @@ class ScrollScraper:
                 handler = urllib.request.ProxyHandler(self.proxy)
                 opener = urllib.request.build_opener(handler)
                 urllib.request.install_opener(opener)
+
             resp = urllib.request.urlopen(req).read()
             page = BeautifulSoup(resp, 'lxml')
             author = page.find('a', {'rel': 'author'}).contents[0]
@@ -78,14 +79,17 @@ class ScrollScraper:
             if full_content != '':
                 self.cursor.execute("INSERT INTO ARTICLES VALUES (?,?,?,?)", (None, full_content, author, link))
                 self.conn.commit()
+            time.sleep(sleep)
 
-    def scrape(self, num_scrolls=1):
+    def scrape(self, num_scrolls=1, sleep=3):
         '''
         Scraper function
         num_scrolls: int, Number of times to fetch more entries. Default is 1
+        sleep: Amount of time to sleep to avoid excessive requests error or blocking
         '''
         assert num_scrolls >= 0, "Number of scrolls cannot be less than zero"
+        assert  sleep >= 0, "Sleep time cannot be negative"
         all_links = self._get_links(num_scrolls)
-        self._get_article_content(all_links)
+        self._get_article_content(all_links, sleep)
         self.conn.close()
         self.driver.close()

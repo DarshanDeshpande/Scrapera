@@ -11,7 +11,7 @@ with open('requirements.txt') as f:
 
 setup(
     name="scrapera",
-    version="1.0.14",
+    version="1.0.16",
     description="A universal package of scraper scripts for humans",
     long_description=long_description,
     long_description_content_type="text/markdown",

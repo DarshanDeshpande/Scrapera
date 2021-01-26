@@ -50,7 +50,7 @@ class AmazonReviewScraper:
                     all_links.add(href)
         return all_links
 
-    def _scrape_products(self, all_links, num_reviews=10):
+    def _scrape_products(self, all_links, num_reviews=10, sleep=5):
         for link in tqdm(all_links):
             try:
                 self.driver.get(link)
@@ -69,26 +69,30 @@ class AmazonReviewScraper:
                             break
                     self.driver.execute_script(f'''document.getElementsByClassName('a-last')[0].firstElementChild.click()''')
                     self.conn.commit()
+                    print(f"Sleeping for {sleep} seconds to avoid excessive requests or blocking")
+                    time.sleep(sleep)
             except Exception:
                 self.conn.commit()
                 print("Invalid link encountered. Skipping")
                 continue
         print(f"Extraction finished")
 
-    def scrape(self, query, num_pages=1, num_reviews=10):
+    def scrape(self, query, num_pages=1, num_reviews=10, sleep=5):
         '''
         Scrapes product reviews for a specific query and writes the results in a SQLite database
         query: str, Keywords used for fetching
         num_pages: int, Number of pages to be fetched. Default is 1
         num_reviews: int, Number of reviews per product. Default is 10
+        sleep: float, Amount of time to sleep between successive fetches. Sleeping reduces chances of HTTP Error 429 (Excessive Requests)
         '''
         query = str(query).replace(' ', '+')
         assert num_pages >= 1, f"Number of pages must be greater than 0. Receiver {num_pages}"
         assert num_reviews >= 1
+        assert sleep >= 0, "Sleep time cannot be negative"
         if num_reviews % 10 != 0:
             print(f"WARNING: Number of reviews will be the closest multiple of 10 to {num_reviews}"
                   " because of fetching restrictions")
-        all_links = self._scrape_links(query,num_pages)
-        self._scrape_products(all_links,num_reviews)
+        all_links = self._scrape_links(query, num_pages)
+        self._scrape_products(all_links, num_reviews, sleep)
         self.conn.close()
         self.driver.close()

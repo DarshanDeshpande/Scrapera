@@ -55,6 +55,7 @@ Scrapera provides access to a variety of scraper scripts for most commonly used 
         <li><a href="https://github.com/DarshanDeshpande/Scrapera/blob/master/scrapera/text/voice_of_america.py">Voice of America News Scraper</a></li>
         <li><a href="https://github.com/DarshanDeshpande/Scrapera/blob/master/scrapera/text/scroll_news.py">Scroll News Scraper</a></li>
         <li><a href="https://github.com/DarshanDeshpande/Scrapera/blob/master/scrapera/text/instagram.py">Instagram Comments Scraper</a></li>
+        <li><a href="https://github.com/DarshanDeshpande/Scrapera/blob/master/scrapera/text/imdb.py">IMDB Reviews Scraper</a></li>
     </ul>
 </li>
 <li>Audio
@@ -82,11 +83,13 @@ This main aim of this package is to cluster common scraping tasks so as to make 
 
 ## Prerequisites
 
-All prerequisites can be installed separately through the `requirements.txt` file as below
+Prerequisites can be installed separately through the `requirements.txt` file as below
 
 ```sh
 pip install -r requirements.txt
 ```
+
+Apart from this, some modules specifically require Chromedriver. Check for a compatible chromedriver and download it from the <a href="https://chromedriver.chromium.org/downloads">official site</a>
  
 ## Installation
 
@@ -131,7 +134,7 @@ _For more examples, please refer to the individual test folders in respective mo
 <!-- CONTRIBUTING -->
 ## Contributing
 
-Scrapera welcomes any and all contributions and scraper requests. Feel free to fork the repository and add your own scrapers to help the community!
+Scrapera welcomes any and all contributions and scraper requests. Please raise an issue if the scraper fails at any instance. Feel free to fork the repository and add your own scrapers to help the community!
 <br>
 For more guidelines, refer to `CONTRIBUTING`
 
@@ -164,5 +167,5 @@ Darshan Deshpande (Owner) - [Email](https://mail.google.com/mail/u/0/?view=cm&fs
 [contributors-url]: https://github.com/othneildrew/Best-README-Template/graphs/contributors
 [license-shield]: https://img.shields.io/badge/LICENSE-MIT-brightgreen?style=for-the-badge
 [license-url]: https://github.com/DarshanDeshpande/Scrapera/blob/master/LICENSE.txt
-[version-shield]: https://img.shields.io/badge/VERSION-1.0.0-orange?style=for-the-badge
+[version-shield]: https://img.shields.io/badge/VERSION-1.0.16-orange?style=for-the-badge
 [python-shield]: https://img.shields.io/badge/PYTHON-3.6%7C3.7%7C3.8-blue?style=for-the-badge

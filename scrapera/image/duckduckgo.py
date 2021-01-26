@@ -55,7 +55,6 @@ class DuckDuckGoScraper:
             image_save_path = out_path + f"/{query + '_' + str(i)}.jpeg" if out_path else f"/{query + '_' + str(i)}.jpeg"
             urllib.request.urlretrieve(image_link, image_save_path)
 
-
     def scrape(self, query, num_scrolls, out_path):
         '''
         query: str, Keywords used for fetching results
