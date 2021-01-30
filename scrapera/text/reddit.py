@@ -9,7 +9,7 @@ from urllib.error import URLError, HTTPError
 
 class RedditPostScraper:
     '''
-    Scrape for Reddit posts and comments based on a search string
+    Scraper for Reddit posts and comments based on a search string
     '''
     def __init__(self):
         self.last_post_id = 0
