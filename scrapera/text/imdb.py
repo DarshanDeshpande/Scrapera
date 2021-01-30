@@ -2,6 +2,7 @@ import os
 import time
 import sqlite3
 import urllib.request
+import urllib.parse
 
 from bs4 import BeautifulSoup as _BeautifulSoup
 from tqdm import tqdm
@@ -28,7 +29,8 @@ class IMDBReviewsScraper:
                           "Chrome/81.0.4044.122 Safari/537.36"}
 
     def _get_id(self, query):
-        url = f'https://www.imdb.com/find?q={query}&ref_=nv_sr_sm'
+
+        url = f'https://www.imdb.com/find?' + urllib.parse.urlencode({'q': query, 'ref_': 'nv_sr_sm'})
         req = urllib.request.Request(url, headers=self.headers)
         response = urllib.request.urlopen(req)
 

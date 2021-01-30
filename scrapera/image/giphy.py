@@ -1,81 +1,68 @@
+import json
 import os
-import time
+import uuid
 import urllib.request
-
-from PIL import Image
-from bs4 import BeautifulSoup
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from tqdm import tqdm
 
 
 class GiphyScraper:
     '''
-    Class for Giphy based GIF scraping
-    Dependencies: Chromedriver
-    Args:
-        driver_path: str, Path to chromedriver executable file
-        chromedriver_proxy: dict, A dictionary containing proxy information for the webdriver
+    GIPHY GIF Scraper
     '''
+    def __init__(self):
+        self.headers = {"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                                      "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.122 Safari/537.36"}
 
-    def __init__(self, driver_path, chromedriver_proxy=None):
-        assert os.path.isfile(driver_path), "Incorrect Chromedriver path received"
+    def scrape(self, query, num_gifs, out_path=None, proxies=None):
+        '''
+        query: str, Search term for GIPHY
+        num_gifs: int, Number of GIFs to scrape
+        out_path: str, Path to output directory
+        proxies: dict, HTTP/HTTPS proxies
+        '''
+        assert query != '' and type(query) is str, "Invalid query"
+        assert num_gifs >= 1 and type(num_gifs) is int, "Number of GIFs cannot be zero or negative"
+        if out_path:
+            assert os.path.isdir(out_path), "Invalid output directory"
 
-        chrome_options = Options()
-        chrome_options.add_argument("--headless")
-        chrome_options.add_argument('log-level=3')
-        if chromedriver_proxy is not None:
-            webdriver.DesiredCapabilities.CHROME['proxy'] = chromedriver_proxy
-        self.driver = webdriver.Chrome(driver_path, options=chrome_options)
-
-        self.proxy = chromedriver_proxy
-
-    def _get_links(self, query, num_scrolls):
-        self.driver.get(f"https://giphy.com/search/{query}")
-
-        for _ in range(num_scrolls):
-            self.driver.execute_script("window.scrollTo(0,document.body.scrollHeight)")
-            time.sleep(2)
-
-        links = []
-        bs4_page = BeautifulSoup(self.driver.page_source, 'lxml')
-        img_tags = bs4_page.findAll('source')
-        for gif in img_tags:
-            links.append(gif['srcset'])
-
-        return links
-
-    def _get_gifs(self, query, all_links, sleep=3, out_path=None):
-        if self.proxy:
-            handler = urllib.request.ProxyHandler(self.proxy)
+        if proxies:
+            assert type(proxies) is dict, "Invalid proxies received"
+            handler = urllib.request.ProxyHandler(proxies)
             opener = urllib.request.build_opener(handler)
             urllib.request.install_opener(opener)
 
-        print("-" * 75)
-        print(f"Found {len(all_links)} GIFs. Starting download")
+        gifs_counter, offset, flag = 0, 0, False
 
-        for index, link in tqdm(enumerate(all_links)):
-            path = os.path.join(out_path, query.replace("+", "_") + f'{index}') if out_path else f'{query.replace("+", "_")}_{index}'
-            urllib.request.urlretrieve(link, path + '.webp')
-            im = Image.open(path + '.webp')
-            im.info.pop('background', None)
-            im.save(f'{path}.gif', 'gif', save_all=True)
-            os.remove(path + '.webp')
-            print(f"Sleeping for {sleep} seconds to avoid excessive requests")
-            time.sleep(sleep)
-        print("Finished Downloading")
-        print("-" * 75)
+        print(f"Fetching results for {query}")
+        query = query.replace(' ', '+')
+        while True:
+            # Max 25 GIFs can be fetched at a time
+            try:
+                req = urllib.request.Request(
+                    f'https://api.giphy.com/v1/gifs/search?api_key=3eFQvabDx69SMoOemSPiYfh9FY0nzO9x&q={query}&offset={offset}&limit=25',
+                    headers=self.headers)
+                resp = urllib.request.urlopen(req).read()
+            except Exception:
+                # Alternate Public API key
+                req = urllib.request.Request(
+                    f'https://api.giphy.com/v1/gifs/search?api_key=Gc7131jiJuvI7IdN0HZ1D7nh0ow5BU6g&q={query}&offset={offset}&limit=25',
+                    headers=self.headers)
+                resp = urllib.request.urlopen(req).read()
 
-    def scrape(self, query, num_scrolls, sleep=3, out_path=None):
-        '''
-        query: str, Keywords used for fetching
-        num_scrolls: int, Number of times to fetch more entries
-        sleep: Amount of time(seconds) to sleep while fetching to avoid excessive retries or blocking.
-        out_path:  [Optional] str, Path to output directory. If unspecified, current directory will be used
-        '''
-        query = str(query).replace(' ', '+')
-        if out_path is not None:
-            out_path = out_path if os.path.isdir(out_path) else None
-        all_links = self._get_links(query, num_scrolls)
-        self._get_gifs(query, all_links, sleep, out_path)
-        self.driver.close()
+            json_contents = json.loads(resp)
+            for data in json_contents['data']:
+                if gifs_counter < num_gifs:
+                    image_link = data['images']['original']['url']
+                    urllib.request.urlretrieve(image_link, os.path.join(out_path,
+                                                                        f'{uuid.uuid1()}.gif') if out_path else f'{uuid.uuid1()}.gif')
+                    gifs_counter += 1
+                else:
+                    flag = True
+                    break
+
+            if flag:
+                break
+
+            print(f"{gifs_counter} GIFs downloaded from page {(offset // 25) + 1}")
+
+            offset += 25
+        print(f"Downloaded {gifs_counter} GIFs")

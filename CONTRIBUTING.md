@@ -21,11 +21,11 @@ You can contribute to this project by
 # Ground Rules
 ### Expectations from contributors
 All contributors must communicate respectfully with other contributors and Scrapera users. Thorough testing of code along with proper documentation is expected from all contributors is expected before merging. 
-Responsibilities
+#####Responsibilities
 * Ensure cross-platform compatibility for every change that's accepted. Windows, Mac, Debian & Ubuntu Linux.
-* Ensure to not use recent versions of <a href="https://pypi.org/project/requests/">requests</a> since they have a conflict with BeautifulSoup's request version. Use urllib instead.
 * Create issues for any major changes and enhancements that you wish to make. Discuss things transparently and get community feedback.
 * Ensure optimality of code
+* Ensure that no selenium or driver based tools are used
 * Don't add any classes to the codebase unless absolutely needed.
 * Keep feature versions as small as possible, preferably one new feature per version.
 * Be welcoming to newcomers and encourage diverse new contributors from all backgrounds. See the [Python Community Code of Conduct](https://www.python.org/psf/codeofconduct/).
@@ -44,6 +44,7 @@ For something that is bigger than a one or two line fix:
 <b>If you find a security vulnerability, do NOT open an issue. Email scraperadev@gmail.com instead.</b>
 
 Any security issues should be submitted directly to scraperadev@gmail.com
+
 In order to determine whether you are dealing with a security issue, ask yourself these two questions:
 * Can I access something that's not mine, or something I shouldn't have access to?
 * Can I disable something for other people?

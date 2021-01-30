@@ -1,4 +1,4 @@
 from scrapera.text.amazon import AmazonReviewScraper
 
-scraper = AmazonReviewScraper(r'path/to/chromedriver.exe', None)
-scraper.scrape('smartphone', 1, 10)
+scraper = AmazonReviewScraper()
+scraper.scrape(query='smartphone', num_product_pages=5, num_review_pages=3, out_path='path/to/output/directory', sleep=3)

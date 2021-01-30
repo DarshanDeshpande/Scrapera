@@ -1,66 +1,79 @@
+import json
 import os
-import time
-
+import re
+import urllib.parse
 import urllib.request
+import uuid
+
 from bs4 import BeautifulSoup
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 from tqdm import tqdm
 
 
 class DuckDuckGoScraper:
     '''
-    Class for DuckDuckGo Image Scraper.
-    Dependencies: Chromedriver
-    Args:
-        driver_path: str, Path to chromedriver executable file
-        chromedriver_proxy: dict, A dictionary containing proxy information for the webdriver
+    DuckDuckGo based scraper for images
     '''
-    def __init__(self, driver_path, chromedriver_proxy=None):
-        assert os.path.isfile(driver_path), "Incorrect Chromedriver path received"
+    def __init__(self):
+        self.headers = {"accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,"
+                                  "*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+                        "upgrade-insecure-requests": "1",
+                        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                                      "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.122 Safari/537.36"}
 
-        chrome_options = Options()
-        chrome_options.add_argument("--headless")
-        chrome_options.add_argument('log-level=3')
-        if chromedriver_proxy is not None:
-            webdriver.DesiredCapabilities.CHROME['proxy'] = chromedriver_proxy
-        self.driver = webdriver.Chrome(driver_path, options=chrome_options)
+    def scrape(self, query, num_pages=1, out_path=None, proxies=None):
+        '''
+        query: str, Search query for scraping images
+        num_pages: int, Number of pages to scrape
+        out_path: str, Path to output directory
+        proxies: str, HTTP/HTTPS proxies
+        '''
+        assert os.path.isdir(out_path), "Invalid output directory"
+        assert query, "Invalid query"
+        assert num_pages >= 1, "Number of pages cannot be negative"
 
-        self.proxy = chromedriver_proxy
+        query = query.replace(' ', '+')
 
-    def _scrape_images(self, query, num_scrolls, out_path):
-
-        # Loading the DuckDuckGo image results page
-        self.driver.get(f"https://duckduckgo.com/?q={query}&iax=images&ia=images")
-
-        # Scroll num_scroll times
-        for _ in range(num_scrolls):
-            self.driver.execute_script("window.scrollTo(0,document.body.scrollHeight)")
-            time.sleep(2)
-
-        # Parse the html to a BS4 object
-        page = BeautifulSoup(self.driver.page_source, 'lxml')
-        image_tags = page.findAll('img', {'class': 'tile--img__img'})
-        image_links = ["https:" + i['data-src'] for i in image_tags]  # Adding https to avoid conflicts during downloading
-        print(f"Found {len(image_links)} links")
-        print("Beginning download")
-
-        if self.proxy:
-            handler = urllib.request.ProxyHandler(self.proxy)
+        if proxies:
+            handler = urllib.request.ProxyHandler(proxies)
             opener = urllib.request.build_opener(handler)
             urllib.request.install_opener(opener)
 
-        for i, image_link in tqdm(enumerate(image_links)):
-            # Deciding the output path based on given directory
-            image_save_path = out_path + f"/{query + '_' + str(i)}.jpeg" if out_path else f"/{query + '_' + str(i)}.jpeg"
-            urllib.request.urlretrieve(image_link, image_save_path)
+        opener = urllib.request.build_opener()
+        opener.addheaders = [(i, self.headers[i]) for i in self.headers.keys()]
+        urllib.request.install_opener(opener)
 
-    def scrape(self, query, num_scrolls, out_path):
-        '''
-        query: str, Keywords used for fetching results
-        num_scrolls: int, Number of times to fetch more entries
-        out_path:  [Optional] str, Path to output directory. If unspecified, current directory will be used
-        '''
-        query = str(query).replace(' ', '+')
-        out_path = out_path if os.path.isdir(out_path) else None
-        self._scrape_images(query,num_scrolls,out_path)
+        vqd = None
+        url = f'https://duckduckgo.com/?' + urllib.parse.urlencode(
+            {'q': query, 'iax': 'images', 'iar': 'images', 'ia': 'images'})
+
+        resp = urllib.request.urlopen(url).read()
+        all_scripts = BeautifulSoup(resp, 'lxml').findAll('script')
+        scripts = [i for i in all_scripts if 'src' not in i.attrs.keys()]
+        for script in scripts:
+            vqd = re.findall(r"vqd='([0-9]+(-[0-9]+)+)'", ''.join(script.contents))[0][0]
+            if vqd:
+                break
+
+        if not vqd:
+            raise ValueError("Could not find encryption key")
+
+        for page in range(num_pages):
+
+            search_url = f'https://duckduckgo.com/i.js?' + urllib.parse.urlencode({'q': query, 'o': 'json', 'p': page,
+                                                                                   's': '100', 'u': 'bing', 'f': ',,,',
+                                                                                   'l': 'us-en', 'vqd': vqd})
+            resp = urllib.request.urlopen(search_url).read()
+            json_contents = json.loads(resp)
+
+            for result in tqdm(json_contents['results']):
+                image_path = result['image'].split('/')[-1]
+                if image_path.split('.')[-1] in ['jpg', 'png', 'jpeg']:
+                    path = os.path.join(out_path, image_path) if out_path else image_path
+                else:
+                    path = os.path.join(out_path, f'{uuid.uuid1()}.jpg') if out_path else f'{uuid.uuid1()}.jpg'
+                try:
+                    urllib.request.urlretrieve(result['image'], path)
+                except Exception as e:
+                    print(f"Could not get image due to {e}")
+                    continue
+
