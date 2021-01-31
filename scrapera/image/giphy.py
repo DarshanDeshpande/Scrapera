@@ -41,14 +41,16 @@ class GiphyScraper:
                     f'https://api.giphy.com/v1/gifs/search?api_key=3eFQvabDx69SMoOemSPiYfh9FY0nzO9x&q={query}&offset={offset}&limit=25',
                     headers=self.headers)
                 resp = urllib.request.urlopen(req).read()
+                json_contents = json.loads(resp)
+
             except Exception:
                 # Alternate Public API key
                 req = urllib.request.Request(
                     f'https://api.giphy.com/v1/gifs/search?api_key=Gc7131jiJuvI7IdN0HZ1D7nh0ow5BU6g&q={query}&offset={offset}&limit=25',
                     headers=self.headers)
                 resp = urllib.request.urlopen(req).read()
+                json_contents = json.loads(resp)
 
-            json_contents = json.loads(resp)
             for data in json_contents['data']:
                 if gifs_counter < num_gifs:
                     image_link = data['images']['original']['url']

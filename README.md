@@ -55,6 +55,7 @@ Scrapera is a completely **Chromedriver free** package that provides access to a
         <li><a href="https://github.com/DarshanDeshpande/Scrapera/blob/master/scrapera/text/voice_of_america.py">Voice of America News Scraper</a></li>
         <li><a href="https://github.com/DarshanDeshpande/Scrapera/blob/master/scrapera/text/scroll_news.py">Scroll News Scraper</a></li>
         <li><a href="https://github.com/DarshanDeshpande/Scrapera/blob/master/scrapera/text/imdb.py">IMDB Reviews Scraper</a></li>
+        <li><a href="https://github.com/DarshanDeshpande/Scrapera/blob/master/scrapera/text/reddit.py">Reddit Scraper</a></li>
     </ul>
 </li>
 <li>Audio
@@ -154,5 +155,5 @@ Darshan Deshpande (Owner) - [Email](https://mail.google.com/mail/u/0/?view=cm&fs
 [contributors-url]: https://github.com/othneildrew/Best-README-Template/graphs/contributors
 [license-shield]: https://img.shields.io/badge/LICENSE-MIT-brightgreen?style=for-the-badge
 [license-url]: https://github.com/DarshanDeshpande/Scrapera/blob/master/LICENSE.txt
-[version-shield]: https://img.shields.io/badge/VERSION-1.0.17-orange?style=for-the-badge
+[version-shield]: https://img.shields.io/badge/VERSION-1.0.18-orange?style=for-the-badge
 [python-shield]: https://img.shields.io/badge/PYTHON-3.6%7C3.7%7C3.8-blue?style=for-the-badge

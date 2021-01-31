@@ -25,7 +25,7 @@ All contributors must communicate respectfully with other contributors and Scrap
 * Ensure cross-platform compatibility for every change that's accepted. Windows, Mac, Debian & Ubuntu Linux.
 * Create issues for any major changes and enhancements that you wish to make. Discuss things transparently and get community feedback.
 * Ensure optimality of code
-* Ensure that no selenium or driver based tools are used
+* Ensure that no selenium or webdriver based tools are used
 * Don't add any classes to the codebase unless absolutely needed.
 * Keep feature versions as small as possible, preferably one new feature per version.
 * Be welcoming to newcomers and encourage diverse new contributors from all backgrounds. See the [Python Community Code of Conduct](https://www.python.org/psf/codeofconduct/).
@@ -37,7 +37,14 @@ For something that is bigger than a one or two line fix:
 1. Create your own fork of the code
 2. Do the changes in your fork
 3. If you like the change and think the project could use it then be sure you have followed the code style for the project.
-4. Create a request
+4. Create a pull request
+
+# Format for addition of a scraper
+1. Ensure that you are writing optimized code and following PEP8 guidelines
+2. Your code must follow the format of a single class with a main callable function for every scraper that you add
+3. Callable functions must be properly documented and all parameters should be explained
+4. You must add a test file under the domain directory to display how the scraper can be instantiated and executed
+5. You must add your scraper/s to the list of scrapers in the `README` file before initiating a pull request
 
 # How to report a bug
 
