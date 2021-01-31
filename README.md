@@ -10,7 +10,9 @@
 <!-- PROJECT SHIELDS -->
 [![MIT License][license-shield]][license-url]
 ![version-shield]
+![release-shield]
 ![python-shield]
+
 
 
 <!-- TABLE OF CONTENTS -->
@@ -155,5 +157,6 @@ Darshan Deshpande (Owner) - [Email](https://mail.google.com/mail/u/0/?view=cm&fs
 [contributors-url]: https://github.com/othneildrew/Best-README-Template/graphs/contributors
 [license-shield]: https://img.shields.io/badge/LICENSE-MIT-brightgreen?style=for-the-badge
 [license-url]: https://github.com/DarshanDeshpande/Scrapera/blob/master/LICENSE.txt
-[version-shield]: https://img.shields.io/badge/VERSION-1.0.18-orange?style=for-the-badge
+[version-shield]: https://img.shields.io/badge/VERSION-1.1.1-orange?style=for-the-badge
 [python-shield]: https://img.shields.io/badge/PYTHON-3.6%7C3.7%7C3.8-blue?style=for-the-badge
+[release-shield]: https://img.shields.io/badge/Build-Stable-yellow?style=for-the-badge
