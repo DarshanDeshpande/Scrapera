@@ -30,8 +30,8 @@
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
+    <li><a href="#sponsors">Sponsors</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
     <li><a href="#acknowledgements">Acknowledgements</a></li>
@@ -128,12 +128,16 @@ Scrapera welcomes any and all contributions and scraper requests. Please raise a
 <br>
 For more guidelines, refer to `CONTRIBUTING`
 
-
 <!-- LICENSE -->
 ## License
 
 Distributed under the MIT License. See `LICENSE` for more information.
 
+## Sponsors
+
+<a href="https://serpapi.com/">
+    <img src="https://i.imgur.com/CBOSxrm.png" alt="Logo"  width="165px" height="65px">
+  </a>
 
 <!-- CONTACT -->
 ## Contact

@@ -54,8 +54,7 @@ class IMDBReviewsScraper:
         try:
             page_key = bs4_page.find('div', {'class': 'load-more-data'})['data-key']
         except TypeError:
-            print("ERROR: Excessive requests. Increase sleep time or using proxies for longer scraping")
-            exit(1)
+            raise TypeError("ERROR: Excessive requests. Increase sleep time or using proxies for longer scraping")
 
         for review in bs4_page.findAll('div', {'class': 'review-container'}):
             # Sometimes the rating doesn't render appropriately
@@ -80,8 +79,7 @@ class IMDBReviewsScraper:
             try:
                 page_key = bs4_page.find('div', {'class': 'load-more-data'})['data-key']
             except TypeError:
-                print("ERROR: Excessive requests. Increase sleep time or using proxies for longer scraping")
-                exit(1)
+                raise TypeError("ERROR: Excessive requests. Increase sleep time or using proxies for longer scraping")
 
             for review in bs4_page.findAll('div', {'class': 'review-container'}):
                 try:
