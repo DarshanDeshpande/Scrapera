@@ -18,8 +18,7 @@ class RedditPostScraper:
         self.data_exhausted = False
         self.topic = ""
         self.post_count = 0
-        # self.search_url = "https://gateway.reddit.com/desktopapi/v1/search?rtj=only&allow_over18=&include=structuredStyles," \
-        #            "prefsSubreddit&q={}&sort=relevance&t=all&type=link,sr,user&after={}&b=true"
+
         self.search_url = "https://gateway.reddit.com/desktopapi/v1/search?q={}"
         self.comments_url = "https://gateway.reddit.com/desktopapi/v1/postcomments/{}"
 
@@ -117,6 +116,3 @@ class RedditPostScraper:
             json.dump(self.posts_data, f)
             f.close()
         print("Data saved in reddit_data.json")
-
-
-

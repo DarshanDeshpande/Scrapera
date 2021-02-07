@@ -15,3 +15,6 @@ urllib3
 lxml
 requests
 brotli
+aiohttp
+aiosqlite
+aiofiles

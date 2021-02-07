@@ -43,7 +43,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-Scrapera is a completely **Chromedriver free** package that provides access to a variety of scraper scripts for most commonly used machine learning and data science domains. Scrapera directly scrapes from public API endpoints, thereby removing the heavy browser overhead which makes Scrapera extremely fast and robust to DOM changes. Currently, Scrapera supports the following crawlers: 
+Scrapera is a completely **Chromedriver free** package that provides access to a variety of scraper scripts for most commonly used machine learning and data science domains. Scrapera directly and asynchronously scrapes from public API endpoints, thereby removing the heavy browser overhead which makes Scrapera extremely fast and robust to DOM changes. Currently, Scrapera supports the following crawlers: 
 <li>Images
     <ul>
         <li><a href="https://github.com/DarshanDeshpande/Scrapera/blob/master/scrapera/image/duckduckgo.py">DuckDuckGo Scraper</a></li>
@@ -161,6 +161,6 @@ Darshan Deshpande (Owner) - [Email](https://mail.google.com/mail/u/0/?view=cm&fs
 [contributors-url]: https://github.com/othneildrew/Best-README-Template/graphs/contributors
 [license-shield]: https://img.shields.io/badge/LICENSE-MIT-brightgreen?style=for-the-badge
 [license-url]: https://github.com/DarshanDeshpande/Scrapera/blob/master/LICENSE.txt
-[version-shield]: https://img.shields.io/badge/VERSION-1.1.1-orange?style=for-the-badge
+[version-shield]: https://img.shields.io/badge/VERSION-1.1.3-orange?style=for-the-badge
 [python-shield]: https://img.shields.io/badge/PYTHON-3.6%7C3.7%7C3.8-blue?style=for-the-badge
 [release-shield]: https://img.shields.io/badge/Build-Stable-yellow?style=for-the-badge

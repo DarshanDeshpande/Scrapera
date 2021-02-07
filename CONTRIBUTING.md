@@ -42,9 +42,10 @@ For something that is bigger than a one or two line fix:
 # Format for addition of a scraper
 1. Ensure that you are writing optimized code and following PEP8 guidelines
 2. Your code must follow the format of a single class with a main callable function for every scraper that you add
-3. Callable functions must be properly documented and all parameters should be explained
-4. You must add a test file under the domain directory to display how the scraper can be instantiated and executed
-5. You must add your scraper/s to the list of scrapers in the `README` file before initiating a pull request
+3. All request calls should be made as asynchronous as possible
+4. Callable functions must be properly documented and all parameters should be explained
+5. You must add a test file under the domain directory to display how the scraper can be instantiated and executed
+6. You must add your scraper/s to the list of scrapers in the `README` file before initiating a pull request
 
 # How to report a bug
 
