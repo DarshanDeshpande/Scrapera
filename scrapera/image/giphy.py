@@ -1,81 +1,127 @@
+import asyncio
+import json
 import os
-import time
-import urllib.request
-
-from PIL import Image
-from bs4 import BeautifulSoup
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from tqdm import tqdm
+import random
+import uuid
+import aiofiles
+import aiohttp
+import math
+import warnings
 
 
 class GiphyScraper:
-    '''
-    Class for Giphy based GIF scraping
-    Dependencies: Chromedriver
-    Args:
-        driver_path: str, Path to chromedriver executable file
-        chromedriver_proxy: dict, A dictionary containing proxy information for the webdriver
-    '''
+    def __init__(self):
+        self.get_headers = {"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                                          "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.122 Safari/537.36"}
+        self.gifs_counter = None
+        self.proxies = None
 
-    def __init__(self, driver_path, chromedriver_proxy=None):
-        assert os.path.isfile(driver_path), "Incorrect Chromedriver path received"
+    async def _get_response(self, session, url):
+        if self.proxies:
+            for _ in range(len(self.proxies)):
+                try:
+                    proxy = random.choice(self.proxies)
+                    async with session.get(url, headers=self.get_headers, proxy=proxy, timeout=3) as response:
+                        assert response.status == 200
+                        return await response.read()
+                except (asyncio.TimeoutError, aiohttp.client.ClientProxyConnectionError,
+                        aiohttp.client.ClientHttpProxyError, aiohttp.client.ServerDisconnectedError,
+                        aiohttp.client.ClientOSError):
+                    try:
+                        self.proxies.remove(proxy)
+                        if not self.proxies:
+                            raise AssertionError("Exhausted all proxies. Check if your proxies are working")
+                    except ValueError:
+                        pass
+        else:
+            async with session.get(url, headers=self.get_headers) as response:
+                assert response.status == 200
+                return await response.read()
 
-        chrome_options = Options()
-        chrome_options.add_argument("--headless")
-        chrome_options.add_argument('log-level=3')
-        if chromedriver_proxy is not None:
-            webdriver.DesiredCapabilities.CHROME['proxy'] = chromedriver_proxy
-        self.driver = webdriver.Chrome(driver_path, options=chrome_options)
+    async def _save_image(self, session, url, path):
+        if self.proxies:
+            for _ in range(len(self.proxies) + 1):
+                try:
+                    proxy = random.choice(self.proxies)
+                    async with session.get(url, headers=self.get_headers, proxy=proxy, timeout=3) as resp:
+                        if resp.status == 200:
+                            f = await aiofiles.open(path, mode='wb+')
+                            await f.write(await resp.read())
+                            await f.close()
+                except aiohttp.ClientConnectionError:
+                    warnings.warn("Invalid URL recieved. Continuing")
+                    return
+                except (asyncio.TimeoutError, aiohttp.client.ClientProxyConnectionError,
+                        aiohttp.client.ClientHttpProxyError, aiohttp.client.ServerDisconnectedError,
+                        aiohttp.client.ClientOSError):
+                    try:
+                        self.proxies.remove(proxy)
+                        if not self.proxies:
+                            raise AssertionError("Exhausted all proxies. Check if your proxies are working")
+                    except ValueError:
+                        pass
+        else:
+            async with session.get(url, headers=self.get_headers) as resp:
+                if resp.status == 200:
+                    f = await aiofiles.open(path, mode='wb+')
+                    await f.write(await resp.read())
+                    await f.close()
 
-        self.proxy = chromedriver_proxy
+    async def _get_json_data(self, session, json_contents, num_gifs, out_path):
+        for data in json_contents['data']:
+            if self.gifs_counter < num_gifs + 1:
+                image_link = data['images']['original']['url']
+                await self._save_image(session, image_link, os.path.join(out_path,
+                                                                         f'{uuid.uuid1()}.gif') if out_path else f'{uuid.uuid1()}.gif')
+                self.gifs_counter += 1
 
-    def _get_links(self, query, num_scrolls):
-        self.driver.get(f"https://giphy.com/search/{query}")
+    async def _get_json(self, session, query, offset):
+        try:
+            # Alternate Public API key
+            # f'https://api.giphy.com/v1/gifs/search?api_key=Gc7131jiJuvI7IdN0HZ1D7nh0ow5BU6g&q={query}&offset={offset}&limit=25'
 
-        for _ in range(num_scrolls):
-            self.driver.execute_script("window.scrollTo(0,document.body.scrollHeight)")
-            time.sleep(2)
+            resp = await self._get_response(session,
+                                            f'https://api.giphy.com/v1/gifs/search?api_key=3eFQvabDx69SMoOemSPiYfh9FY0nzO9x&q={query}&offset={offset}&limit=25')
+        except AssertionError:
+            raise
+        return resp.decode()
 
-        links = []
-        bs4_page = BeautifulSoup(self.driver.page_source, 'lxml')
-        img_tags = bs4_page.findAll('source')
-        for gif in img_tags:
-            links.append(gif['srcset'])
+    async def _main_exec(self, query, num_gifs, out_path=None):
+        offset, flag = 0, False
+        self.gifs_counter = 1
 
-        return links
+        print(f"Fetching results for {query}")
+        query = query.replace(' ', '+')
 
-    def _get_gifs(self, query, all_links, sleep=3, out_path=None):
-        if self.proxy:
-            handler = urllib.request.ProxyHandler(self.proxy)
-            opener = urllib.request.build_opener(handler)
-            urllib.request.install_opener(opener)
+        async with aiohttp.ClientSession() as session:
+            # Max 25 GIFs can be fetched at a time
+            coros = []
+            for i in range(math.ceil(num_gifs / 25)):
+                coros.append(self._get_json(session, query, offset))
+                offset += 25
 
-        print("-" * 75)
-        print(f"Found {len(all_links)} GIFs. Starting download")
+            responses = await asyncio.gather(*coros)
 
-        for index, link in tqdm(enumerate(all_links)):
-            path = os.path.join(out_path, query.replace("+", "_") + f'{index}') if out_path else f'{query.replace("+", "_")}_{index}'
-            urllib.request.urlretrieve(link, path + '.webp')
-            im = Image.open(path + '.webp')
-            im.info.pop('background', None)
-            im.save(f'{path}.gif', 'gif', save_all=True)
-            os.remove(path + '.webp')
-            print(f"Sleeping for {sleep} seconds to avoid excessive requests")
-            time.sleep(sleep)
-        print("Finished Downloading")
-        print("-" * 75)
+            coros = [self._get_json_data(session, json.loads(resp), num_gifs, out_path) for resp in responses]
+            await asyncio.gather(*coros)
 
-    def scrape(self, query, num_scrolls, sleep=3, out_path=None):
+        print(f"Downloaded {self.gifs_counter - 1} GIFs")
+
+    def scrape(self, query, num_gifs, out_path=None, proxies=None):
         '''
-        query: str, Keywords used for fetching
-        num_scrolls: int, Number of times to fetch more entries
-        sleep: Amount of time(seconds) to sleep while fetching to avoid excessive retries or blocking.
-        out_path:  [Optional] str, Path to output directory. If unspecified, current directory will be used
+        query: str, Search term for GIPHY
+        num_gifs: int, Number of GIFs to scrape
+        out_path: str, Path to output directory
+        proxies: list, list of HTTP/Upgradable HTTPS proxies. These proxies are automatically rotated
         '''
-        query = str(query).replace(' ', '+')
-        if out_path is not None:
-            out_path = out_path if os.path.isdir(out_path) else None
-        all_links = self._get_links(query, num_scrolls)
-        self._get_gifs(query, all_links, sleep, out_path)
-        self.driver.close()
+        assert query != '' and type(query) is str, "Invalid query"
+        assert num_gifs >= 1 and type(num_gifs) is int, "Number of GIFs cannot be zero or negative"
+        if out_path:
+            assert os.path.isdir(out_path), "Invalid output directory"
+        if proxies:
+            assert proxies and type(proxies) is list, "Invalid proxies received. 'proxies' must be a list"
+            self.proxies = proxies
+
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(self._main_exec(query, num_gifs, out_path))
+        loop.close()

@@ -10,7 +10,9 @@
 <!-- PROJECT SHIELDS -->
 [![MIT License][license-shield]][license-url]
 ![version-shield]
+![release-shield]
 ![python-shield]
+
 
 
 <!-- TABLE OF CONTENTS -->
@@ -28,8 +30,8 @@
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
+    <li><a href="#sponsors">Sponsors</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
     <li><a href="#acknowledgements">Acknowledgements</a></li>
@@ -41,12 +43,12 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-Scrapera provides access to a variety of scraper scripts for most commonly used machine learning and data science domains. Currently, Scrapera supports the following crawlers: 
+Scrapera is a completely **Chromedriver free** package that provides access to a variety of scraper scripts for most commonly used machine learning and data science domains. Scrapera directly and asynchronously scrapes from public API endpoints, thereby removing the heavy browser overhead which makes Scrapera extremely fast and robust to DOM changes. Currently, Scrapera supports the following crawlers: 
 <li>Images
     <ul>
         <li><a href="https://github.com/DarshanDeshpande/Scrapera/blob/master/scrapera/image/duckduckgo.py">DuckDuckGo Scraper</a></li>
         <li><a href="https://github.com/DarshanDeshpande/Scrapera/blob/master/scrapera/image/giphy.py">GIPHY Scraper</a></li>
-        <li><a href="https://github.com/DarshanDeshpande/Scrapera/blob/master/scrapera/image/instagram.py">Instagram Posts Scraper</a></li>
+        <li><a href="https://github.com/DarshanDeshpande/Scrapera/blob/master/scrapera/image/tumblr.py">Tumblr Scraper</a></li>
     </ul>
 </li>
 <li>Text
@@ -54,8 +56,8 @@ Scrapera provides access to a variety of scraper scripts for most commonly used 
         <li><a href="https://github.com/DarshanDeshpande/Scrapera/blob/master/scrapera/text/amazon.py">Amazon Product Reviews</a></li>
         <li><a href="https://github.com/DarshanDeshpande/Scrapera/blob/master/scrapera/text/voice_of_america.py">Voice of America News Scraper</a></li>
         <li><a href="https://github.com/DarshanDeshpande/Scrapera/blob/master/scrapera/text/scroll_news.py">Scroll News Scraper</a></li>
-        <li><a href="https://github.com/DarshanDeshpande/Scrapera/blob/master/scrapera/text/instagram.py">Instagram Comments Scraper</a></li>
         <li><a href="https://github.com/DarshanDeshpande/Scrapera/blob/master/scrapera/text/imdb.py">IMDB Reviews Scraper</a></li>
+        <li><a href="https://github.com/DarshanDeshpande/Scrapera/blob/master/scrapera/text/reddit.py">Reddit Scraper</a></li>
     </ul>
 </li>
 <li>Audio
@@ -76,7 +78,7 @@ Scrapera provides access to a variety of scraper scripts for most commonly used 
     </ul>
 </li>
 <br>
-This main aim of this package is to cluster common scraping tasks so as to make it more convenient for ML researchers and engineers to focus on their models rather than worrying about the data collection process 
+The main aim of this package is to cluster common scraping tasks so as to make it more convenient for ML researchers and engineers to focus on their models rather than worrying about the data collection process 
 <br><br/>
 
 >DISCLAIMER: Owner or Contributors do not take any responsibility for misuse of data obtained through Scrapera. Contact the owner if copyright terms are violated due to any module provided by Scrapera.  
@@ -89,7 +91,7 @@ Prerequisites can be installed separately through the `requirements.txt` file as
 pip install -r requirements.txt
 ```
 
-Apart from this, some modules specifically require Chromedriver. Check for a compatible chromedriver and download it from the <a href="https://chromedriver.chromium.org/downloads">official site</a>
+
  
 ## Installation
 
@@ -119,18 +121,6 @@ scraper.scrape('https://vimeo.com/191955190', '540p')
 _For more examples, please refer to the individual test folders in respective modules_
 
 
-
-<!-- ROADMAP -->
-## Roadmap
-
-<summary>Known issues</summary>
-<ul>
-    <li>
-        Instagram Comments Scraper needs updation due to recent GraphQL implementation changes
-    </li>
-</ul>
-
-
 <!-- CONTRIBUTING -->
 ## Contributing
 
@@ -138,12 +128,16 @@ Scrapera welcomes any and all contributions and scraper requests. Please raise a
 <br>
 For more guidelines, refer to `CONTRIBUTING`
 
-
 <!-- LICENSE -->
 ## License
 
 Distributed under the MIT License. See `LICENSE` for more information.
 
+## Sponsors
+
+<a href="https://serpapi.com/">
+    <img src="https://i.imgur.com/CBOSxrm.png" alt="Logo"  width="165px" height="65px">
+  </a>
 
 <!-- CONTACT -->
 ## Contact
@@ -167,5 +161,6 @@ Darshan Deshpande (Owner) - [Email](https://mail.google.com/mail/u/0/?view=cm&fs
 [contributors-url]: https://github.com/othneildrew/Best-README-Template/graphs/contributors
 [license-shield]: https://img.shields.io/badge/LICENSE-MIT-brightgreen?style=for-the-badge
 [license-url]: https://github.com/DarshanDeshpande/Scrapera/blob/master/LICENSE.txt
-[version-shield]: https://img.shields.io/badge/VERSION-1.0.16-orange?style=for-the-badge
+[version-shield]: https://img.shields.io/badge/VERSION-1.1.3-orange?style=for-the-badge
 [python-shield]: https://img.shields.io/badge/PYTHON-3.6%7C3.7%7C3.8-blue?style=for-the-badge
+[release-shield]: https://img.shields.io/badge/Build-Stable-yellow?style=for-the-badge

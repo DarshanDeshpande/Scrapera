@@ -1,95 +1,200 @@
+import asyncio
 import os
-import sqlite3
-import time
+import random
+import re
+import warnings
 
-import urllib.request
+import aiohttp
+import aiosqlite
 from bs4 import BeautifulSoup
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from tqdm import tqdm
+
+warnings.filterwarnings('ignore')
 
 
 class VOAScraper:
-    '''
-    Dependencies: Chromedriver
-    Args:
-        driver_path: str, Path to chromedriver executable file
-        out_path:  [Optional] str, Path to output directory. If unspecified, current directory will be used
-        chromedriver_proxy: dict, A dictionary containing proxy information for the webdriver
-    '''
-    def __init__(self, driver_path, out_path=None, chromedriver_proxy=None):
+    def __init__(self):
+        self.get_headers = {'authority': 'www.voanews.com',
+                            'method': 'GET',
+                            'path': '/usa',
+                            'scheme': 'https',
+                            'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+                            'accept-encoding': 'gzip, deflate, br',
+                            'accept-language': 'en-US,en;q=0.9',
+                            'cache-control': 'no-cache',
+                            'dnt': '1',
+                            'pragma': 'no-cache',
+                            'referer': 'https://www.voanews.com/',
+                            'sec-fetch-dest': 'document',
+                            'sec-fetch-mode': 'navigate',
+                            'sec-fetch-site': 'same-origin',
+                            'sec-fetch-user': '?1',
+                            'upgrade-insecure-requests': '1',
+                            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36'}
 
-        assert os.path.isfile(driver_path), "Invalid Chromedriver path received"
+        self.post_headers = {'authority': 'www.voanews.com',
+                             'method': 'POST',
+                             'path': '/views/ajax?_wrapper_format=drupal_ajax',
+                             'scheme': 'https',
+                             'accept': 'application/json, text/javascript, */*; q=0.01',
+                             'accept-encoding': 'deflate',
+                             'accept-language': 'en-US,en;q=0.9',
+                             'cache-control': 'no-cache',
+                             'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                             'dnt': '1',
+                             'origin': 'https://www.voanews.com',
+                             'pragma': 'no-cache',
+                             'referer': 'https://www.voanews.com/usa',
+                             'sec-fetch-dest': 'empty',
+                             'sec-fetch-mode': 'cors',
+                             'sec-fetch-site': 'same-origin',
+                             'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36',
+                             'x-requested-with': 'XMLHttpRequest'}
 
-        chrome_options = Options()
-        chrome_options.add_argument("--headless")
-        chrome_options.add_argument('log-level=3')
-        if chromedriver_proxy is not None:
-            webdriver.DesiredCapabilities.CHROME['proxy'] = chromedriver_proxy
-        self.driver = webdriver.Chrome(driver_path, options=chrome_options)
+        self.proxies = None
 
-        print("Output file: ",
-              os.path.join(out_path, 'VOAArticles.db') if out_path else 'VOAArticles.db')
+    async def _get_response(self, session, url):
+        if self.proxies:
+            for _ in range(len(self.proxies)):
+                try:
+                    proxy = random.choice(self.proxies)
+                    async with session.get(url, headers=self.get_headers, proxy=proxy, timeout=3) as response:
+                        assert response.status == 200
+                        return await response.read()
+                except (asyncio.TimeoutError, aiohttp.client.ClientProxyConnectionError,
+                        aiohttp.client.ClientHttpProxyError, aiohttp.client.ServerDisconnectedError,
+                        aiohttp.client.ClientOSError):
+                    try:
+                        self.proxies.remove(proxy)
+                        if not self.proxies:
+                            raise AssertionError("Exhausted all proxies. Ensure that your proxies are valid")
+                    except ValueError:
+                        pass
+                    continue
+        else:
+            async with session.get(url, headers=self.get_headers) as response:
+                assert response.status == 200, "Could not connect. Check your internet connection"
+                return await response.read()
 
-        self.conn = sqlite3.connect(
-            os.path.join(out_path, 'VOAArticles.db') if out_path else 'VOAArticles.db')
-        self.cursor = self.conn.cursor()
-        self.cursor.execute("CREATE TABLE IF NOT EXISTS ARTICLES (ID INTEGER PRIMARY KEY AUTOINCREMENT,"
-                       "HEADING TEXT,"
-                       "CONTENT TEXT,"
-                       "AUTHOR TEXT,"
-                       "LINK TEXT)")
-        self.proxy = chromedriver_proxy
+    async def _post_response(self, session, url, data):
+        if self.proxies:
+            for _ in range(len(self.proxies)):
+                try:
+                    proxy = random.choice(self.proxies)
+                    async with session.post(url, headers=self.post_headers, data=data) as response:
+                        assert response.status == 200
+                        text = await response.text()
+                        return re.sub(r'\\', '', text.encode().decode('unicode_escape'))
+                except (asyncio.TimeoutError, aiohttp.client.ClientProxyConnectionError,
+                        aiohttp.client.ClientHttpProxyError, aiohttp.client.ServerDisconnectedError,
+                        aiohttp.client.ClientOSError):
+                    try:
+                        self.proxies.remove(proxy)
+                        if not self.proxies:
+                            raise AssertionError("Exhausted all proxies. Ensure that your proxies are valid")
+                    except ValueError:
+                        pass
+                    continue
+        else:
+            async with session.post(url, headers=self.post_headers, data=data) as response:
+                assert response.status == 200
+                text = await response.text()
+                return re.sub(r'\\', '', text.encode().decode('unicode_escape'))
 
-    def _get_links(self, num_scrolls):
+    async def _get_anchors(self, resp):
         all_links = []
-        self.driver.get('https://www.voanews.com/usa')
-        for _ in range(num_scrolls):
-            self.driver.execute_script('''document.querySelector("a[rel='next']").click()''')
-            time.sleep(2)
-
-        bs4_page = BeautifulSoup(self.driver.page_source, 'lxml')
+        bs4_page = BeautifulSoup(resp, 'lxml')
         anchor_tags = bs4_page.findAll('a', {'class': 'teaser__title-link'})
         for a in anchor_tags:
-            all_links.append("https://www.voanews.com" + a['href'])
+            all_links.append(a['href'])
 
         return all_links
 
-    def _get_article_content(self, links):
-        for link in tqdm(links):
-            try:
-                p_list = []
-                req = urllib.request.Request(link)
-                req.add_header('User-Agent',
-                               'Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.17 (KHTML, like Gecko) Chrome/24.0.1312.27 Safari/537.17')
-                if self.proxy:
-                    handler = urllib.request.ProxyHandler(self.proxy)
-                    opener = urllib.request.build_opener(handler)
-                    urllib.request.install_opener(opener)
-                resp = urllib.request.urlopen(req).read()
+    async def _write_to_db(self, session, link, db, cursor):
+        full_text = ''
+        self.get_headers['path'] = link
+        try:
+            resp = await self._get_response(session, "https://www.voanews.com" + link)
+        except Exception:
+            raise
 
-                page = BeautifulSoup(resp, 'lxml')
-                title = page.find('h1', {'class': 'page-header__title'}).find('span').text
-                author = page.find('div', {'class': 'page-header__meta-item'}).findAll('span')[-1].text
-                p_tags = page.find('div', {'class': 'article__body'}).find('div').findAll('p')
+        bs4_page = BeautifulSoup(resp, 'lxml')
+        try:
+            title = bs4_page.find('h1', {'class': 'page-header__title'}).find('span').get_text(strip=True)
+            author = bs4_page.find('div', {'class': 'page-header__meta-item'}).findAll('span')[-1].get_text(
+                strip=True)
+            body = bs4_page.find('div', {'class': 'article__body'}).find('div').findAll('p')
+            for p in body:
+                full_text += p.get_text(strip=True)
+        except AttributeError:
+            return
+        await cursor.execute("INSERT INTO ARTICLES (TITLE, CONTENT, AUTHOR) VALUES (?,?,?)", (title, full_text, author))
+        await db.commit()
 
-                for p in p_tags:
-                    p_list.append(p.text)
-                full_content = '\n'.join(p_list)
-                self.cursor.execute("INSERT INTO ARTICLES VALUES (?,?,?,?,?)", (None, title, full_content, author, link))
-                self.conn.commit()
-            except Exception:
-                continue
+    async def _main_exec(self, num_pages, out_path):
+        async with aiosqlite.connect(out_path) as db:
+            cursor = await db.cursor()
+            await cursor.execute("CREATE TABLE IF NOT EXISTS ARTICLES (ID INTEGER PRIMARY KEY AUTOINCREMENT,"
+                                 "TITLE TEXT,"
+                                 "CONTENT TEXT,"
+                                 "AUTHOR TEXT)")
 
-    def scrape(self, num_scrolls=1, sleep=3):
+            all_links = []
+            async with aiohttp.ClientSession() as session:
+                try:
+                    resp = await self._get_response(session, 'https://www.voanews.com/usa')
+                except Exception:
+                    raise
+                view_dom_id = re.findall(r'"view_dom_id":"[^"]*"', resp.decode())[0].split(':')[-1].replace('"', '')
+                bs4_page = BeautifulSoup(resp, 'lxml')
+                anchor_tags = bs4_page.findAll('a', {'class': 'teaser__title-link'})
+
+                for a in anchor_tags:
+                    all_links.append(a['href'])
+
+                try:
+                    coros = [
+                        self._post_response(session, 'https://www.voanews.com/views/ajax?_wrapper_format=drupal_ajax',
+                                            data={'view_name': 'taxonomy_term',
+                                                  'view_display_id': 'related_content',
+                                                  'view_args': '32681',
+                                                  'view_path': '/taxonomy/term/32681',
+                                                  'view_base_path': 'taxonomy/term/%/feed',
+                                                  'view_dom_id': view_dom_id,
+                                                  'pager_element': '0',
+                                                  'page': page + 1,
+                                                  '_drupal_ajax': '1',
+                                                  'ajax_page_state[theme]': 'voa',
+                                                  'ajax_page_state[libraries]': 'blazy/load,core/html5shiv,core/picturefill,paragraphs/drupal.paragraphs.unpublished,'
+                                                                                'poll/drupal.poll-links,system/base,views/views.module,views_infinite_scroll/views-infinite-scroll,'
+                                                                                'voa/bower,voa/global,voa_breaking_news/breaking-news,voa_media_schedule/menu_block,'
+                                                                                'voa_tracking_code/voa_tracking_code'})
+                        for page in
+                        range(num_pages)]
+                except Exception:
+                    raise
+                responses = await asyncio.gather(*coros)
+
+                coros = [self._get_anchors(resp) for resp in responses]
+                links = await asyncio.gather(*coros)
+                links = sum(links, [])
+
+                coros = [self._write_to_db(session, link, db, cursor) for link in links]
+                await asyncio.gather(*coros)
+
+    def scrape(self, num_pages, out_path=None, proxies=None):
         '''
-        Scraper function for Voice of America News articles
-        num_scrolls: int, Number of times to fetch more entries. Default is 1
-        sleep: Amount of time to sleep to avoid excessive requests or blocking. Default: 3
+        num_pages: int, Number of pages to be scraped
+        out_path: str, Path to output directory
+        proxies: list, list of HTTP/Upgradable HTTPS proxies. These proxies are automatically rotated
         '''
-        assert (type(num_scrolls) == int and num_scrolls >= 0), "Number of scrolls cannot be negative"
-        assert sleep >= 0, "Sleep time cannot be negative"
-        all_links = self._get_links(num_scrolls)
-        self._get_article_content(all_links)
-        self.conn.close()
-        self.driver.close()
+        if out_path:
+            assert os.path.isdir(out_path), "Invalid output directory"
+        if proxies:
+            assert proxies is not None, "Invalid proxies received"
+            self.proxies = proxies
+        assert num_pages >= 1, "Number of pages cannot be zero or negative"
+
+        out_path = os.path.join(out_path, 'VOAArticles.db') if out_path else 'VOAArticles.db'
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(self._main_exec(num_pages, out_path))
+        loop.close()

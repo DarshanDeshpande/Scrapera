@@ -7,10 +7,14 @@ Pillow
 python-dateutil
 pytube
 pytz
-selenium
 six
 soupsieve
 tqdm
 typing-extensions
 urllib3
 lxml
+requests
+brotli
+aiohttp
+aiosqlite
+aiofiles

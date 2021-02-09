@@ -11,7 +11,7 @@ with open('requirements.txt') as f:
 
 setup(
     name="scrapera",
-    version="1.0.16",
+    version="1.1.3",
     description="A universal package of scraper scripts for humans",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -21,6 +21,7 @@ setup(
     license="MIT",
     python_requires=">=3.6.0",
     classifiers=[
+        "Development Status :: 5 - Production/Stable",
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",

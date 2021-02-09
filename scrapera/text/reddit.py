@@ -135,4 +135,3 @@ class RedditPostScraper:
         loop = asyncio.get_event_loop()
         loop.run_until_complete(self._make_requests(numposts, sleepinterval, out_path))
         loop.close()
-

@@ -21,11 +21,11 @@ You can contribute to this project by
 # Ground Rules
 ### Expectations from contributors
 All contributors must communicate respectfully with other contributors and Scrapera users. Thorough testing of code along with proper documentation is expected from all contributors is expected before merging. 
-Responsibilities
+#####Responsibilities
 * Ensure cross-platform compatibility for every change that's accepted. Windows, Mac, Debian & Ubuntu Linux.
-* Ensure to not use recent versions of <a href="https://pypi.org/project/requests/">requests</a> since they have a conflict with BeautifulSoup's request version. Use urllib instead.
 * Create issues for any major changes and enhancements that you wish to make. Discuss things transparently and get community feedback.
 * Ensure optimality of code
+* Ensure that no selenium or webdriver based tools are used
 * Don't add any classes to the codebase unless absolutely needed.
 * Keep feature versions as small as possible, preferably one new feature per version.
 * Be welcoming to newcomers and encourage diverse new contributors from all backgrounds. See the [Python Community Code of Conduct](https://www.python.org/psf/codeofconduct/).
@@ -37,13 +37,22 @@ For something that is bigger than a one or two line fix:
 1. Create your own fork of the code
 2. Do the changes in your fork
 3. If you like the change and think the project could use it then be sure you have followed the code style for the project.
-4. Create a request
+4. Create a pull request
+
+# Format for addition of a scraper
+1. Ensure that you are writing optimized code and following PEP8 guidelines
+2. Your code must follow the format of a single class with a main callable function for every scraper that you add
+3. All request calls should be made as asynchronous as possible
+4. Callable functions must be properly documented and all parameters should be explained
+5. You must add a test file under the domain directory to display how the scraper can be instantiated and executed
+6. You must add your scraper/s to the list of scrapers in the `README` file before initiating a pull request
 
 # How to report a bug
 
 <b>If you find a security vulnerability, do NOT open an issue. Email scraperadev@gmail.com instead.</b>
 
 Any security issues should be submitted directly to scraperadev@gmail.com
+
 In order to determine whether you are dealing with a security issue, ask yourself these two questions:
 * Can I access something that's not mine, or something I shouldn't have access to?
 * Can I disable something for other people?
