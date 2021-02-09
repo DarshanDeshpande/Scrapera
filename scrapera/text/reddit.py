@@ -75,7 +75,6 @@ class RedditPostScraper:
                     author_id = post['belongsTo']['id']
                     subreddit = subreddits.get(author_id)['displayText'] if post['belongsTo']['type'] == 'subreddit' else f'u/{post["author"]}'
                     comments = await self._get_comments(postId) if self.comments_flag else {}
-                    # comments = await self._get_comments(postId)
                     self.posts_data[postId] = {'title': post.get("title"), 'numComments': post.get("numComments"),
                                                 'upVotes': post.get("score"), 'author': post.get("author"),
                                                 'subreddit': subreddit, 'isSponsored': post.get('isSponsored'),
