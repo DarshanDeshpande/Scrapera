@@ -104,20 +104,20 @@ class RedditPostScraper:
             else:
                 await self._get_next_page()
                 time.sleep(random.randint(*sleepinterval))
-        out_path = "Scraped_reddit_data(async).json" if out_path is None else os.path.join(out_path, "Scraped_reddit_data(async).json")
+        out_path = "Scraped_reddit_data.json" if out_path is None else os.path.join(out_path, "Scraped_reddit_data.json")
         with open(out_path, "w") as f:
             json.dump(self.posts_data, f)
             f.close()
         print(f"[INFO]: Data saved in {out_path}")
 
-    def scrape(self, topic, numposts=100, comments=False, sleepinterval=None, out_path=None, proxies=None):
+    def scrape(self, topic, out_path, numposts=100, comments=False, sleepinterval=None, proxies=None):
         """
         topic: str, topic to search reddit
+        out_path: str, Absolute path to output directory
         numposts: [Optional] int, maximum number of posts to scrape
         comments: [Optional] bool, flag for scraping comments data
         sleepinterval: [Optional] list(int), sleep interval in between requests
-        out_path: [Optional] str, Path to output directory. If unspecified, current directory will be used
-        urllib_proxies: [Optional] dict, Proxy information for urllib requests
+        proxies: [Optional] dict, Proxy information for urllib requests
         """
         if sleepinterval is None:
             sleepinterval = [0, 2]
