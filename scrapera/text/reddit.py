@@ -4,8 +4,6 @@ import json
 import random
 import aiohttp
 import asyncio
-import urllib
-import urllib.request
 
 
 class RedditPostScraper:
