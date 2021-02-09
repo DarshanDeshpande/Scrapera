@@ -20,7 +20,7 @@ class RedditPostScraper:
         self.post_count = 0
         # self.search_url = "https://gateway.reddit.com/desktopapi/v1/search?rtj=only&allow_over18=&include=structuredStyles," \
         #            "prefsSubreddit&q={}&sort=relevance&t=all&type=link,sr,user&after={}&b=true"
-        self.search_url = "https://gateway.reddit.com/desktopapi/v1/search?q={}"
+        self.search_url = "https://gateway.reddit.com/desktopapi/v1/search?q={}&after={}"
         self.comments_url = "https://gateway.reddit.com/desktopapi/v1/postcomments/{}"
 
     def _get_comments(self, id):
