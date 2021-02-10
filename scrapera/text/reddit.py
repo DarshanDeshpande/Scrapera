@@ -1,5 +1,4 @@
 import os
-import time
 import json
 import random
 import aiohttp
@@ -58,7 +57,6 @@ class RedditPostScraper:
         """
         Loads next page and calls _get_comments() to get the comments for each post
         """
-        time.sleep(random.randint(0, 1))
         async with aiohttp.ClientSession() as session:
             json_data = await self._fetch_response(session, self.search_url.format(self.topic, self.last_post_id))
             if 'subreddits' in json_data:
@@ -82,7 +80,7 @@ class RedditPostScraper:
                     self.post_count += 1
                 self.last_post_id = postIds[-1]
 
-    async def _make_requests(self, numposts=100, sleepinterval=None, out_path=None):
+    async def _make_requests(self, numposts=100, out_path=None):
         """
         controls entire process of requesting new pages and handle other critical functionality
         dumps data to json
@@ -100,35 +98,30 @@ class RedditPostScraper:
                 break
             else:
                 await self._get_next_page()
-                time.sleep(random.randint(*sleepinterval))
         out_path = "Scraped_reddit_data.json" if out_path is None else os.path.join(out_path, "Scraped_reddit_data.json")
         with open(out_path, "w") as f:
             json.dump(self.posts_data, f)
             f.close()
         print(f"[INFO]: Data saved in {out_path}")
 
-    def scrape(self, topic, out_path, numposts=100, comments=False, sleepinterval=None, proxies=None):
+    def scrape(self, topic, out_path, numposts=100, comments=False, proxies=None):
         """
         topic: str, topic to search reddit
         out_path: str, Absolute path to output directory
         numposts: [Optional] int, maximum number of posts to scrape
         comments: [Optional] bool, flag for scraping comments data
-        sleepinterval: [Optional] list(int), sleep interval in between requests
         proxies: [Optional] dict, Proxy information for urllib requests
         """
-        if sleepinterval is None:
-            sleepinterval = [0, 2]
         if proxies is None:
             proxies = []
         if not topic:
             print("Empty topic")
             return False
-        assert len(sleepinterval) == 2, 'sleepinterval list must be of length 2'
         assert os.path.exists(out_path), f'{out_path} does not exist'
         assert type(proxies) == list, 'Pass proxies as a list of strictly http URLS'
         self.comments_flag = comments
         self.topic = topic.replace(" ", "+")
         print('[INFO]: Scraping starts')
         loop = asyncio.get_event_loop()
-        loop.run_until_complete(self._make_requests(numposts, sleepinterval, out_path))
+        loop.run_until_complete(self._make_requests(numposts, out_path))
         loop.close()
