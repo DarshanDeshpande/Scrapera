@@ -135,7 +135,7 @@ class RedditPostScraper:
             print("Empty topic")
             return False
         assert os.path.exists(out_path), f'{out_path} does not exist'
-        assert type(proxies) == list, 'Pass proxies as a list of strictly http URLS'
+        assert type(proxies) is list, 'Pass proxies as a list of strictly http URLS'
         self.proxies = proxies
         self.comments_flag = comments
         self.topic = topic.replace(" ", "+")
