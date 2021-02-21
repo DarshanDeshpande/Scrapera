@@ -30,7 +30,7 @@ class IMDBReviewsScraper:
 
     def _get_id(self, query):
 
-        url = f'https://www.imdb.com/find?' + urllib.parse.urlencode({'q': query, 'ref_': 'nv_sr_sm'})
+        url = 'https://www.imdb.com/find?' + urllib.parse.urlencode({'q': query, 'ref_': 'nv_sr_sm'})
         req = urllib.request.Request(url, headers=self.headers)
         response = urllib.request.urlopen(req)
 

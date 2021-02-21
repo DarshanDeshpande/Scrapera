@@ -54,10 +54,10 @@ class DuckDuckGoScraper:
                             await f.write(await resp.read())
                             await f.close()
                 except aiohttp.ClientConnectionError:
-                    warnings.warn(f"Invalid URL recieved. Continuing")
+                    warnings.warn("Invalid URL recieved. Continuing")
                     return
                 except aiohttp.ClientPayloadError:
-                    warnings.warn(f"Encountered Payload error. This is caused due to unacceptable headers. Continuing")
+                    warnings.warn("Encountered Payload error. This is caused due to unacceptable headers. Continuing")
                     return
                 except (asyncio.TimeoutError, aiohttp.client.ClientProxyConnectionError,
                         aiohttp.client.ClientHttpProxyError, aiohttp.client.ServerDisconnectedError,
@@ -75,14 +75,14 @@ class DuckDuckGoScraper:
                         await f.write(await resp.read())
                         await f.close()
             except aiohttp.ClientConnectionError:
-                warnings.warn(f"Invalid URL recieved. Continuing")
+                warnings.warn("Invalid URL recieved. Continuing")
                 return
             except aiohttp.ClientPayloadError:
-                warnings.warn(f"Encountered Payload error. This is caused due to unacceptable headers. Continuing")
+                warnings.warn("Encountered Payload error. This is caused due to unacceptable headers. Continuing")
                 return
 
     async def _get_vqd(self, session, query):
-        url = f'https://duckduckgo.com/?' + urllib.parse.urlencode(
+        url = 'https://duckduckgo.com/?' + urllib.parse.urlencode(
             {'q': query, 'iax': 'images', 'iar': 'images', 'ia': 'images'})
 
         html = await self._get_response(session, url)
@@ -98,7 +98,7 @@ class DuckDuckGoScraper:
         return vqd
 
     async def _get_json(self, session, query, page, vqd):
-        search_url = f'https://duckduckgo.com/i.js?' + urllib.parse.urlencode({'q': query, 'o': 'json',
+        search_url = 'https://duckduckgo.com/i.js?' + urllib.parse.urlencode({'q': query, 'o': 'json',
                                                                                'p': page + 1, 's': page * 100,
                                                                                'u': 'bing', 'f': ',,,',
                                                                                'l': 'us-en', 'vqd': vqd})

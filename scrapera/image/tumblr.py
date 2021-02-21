@@ -48,10 +48,10 @@ class TumblrImagesScraper:
                             await f.write(await resp.read())
                             await f.close()
                 except aiohttp.ClientConnectionError:
-                    warnings.warn(f"Invalid URL recieved. Continuing")
+                    warnings.warn("Invalid URL recieved. Continuing")
                     return
                 except aiohttp.ClientPayloadError:
-                    warnings.warn(f"Encountered Payload error. This is caused due to unacceptable headers. Continuing")
+                    warnings.warn("Encountered Payload error. This is caused due to unacceptable headers. Continuing")
                     return
                 except (asyncio.TimeoutError, aiohttp.client.ClientProxyConnectionError,
                         aiohttp.client.ClientHttpProxyError, aiohttp.client.ServerDisconnectedError,
@@ -69,10 +69,10 @@ class TumblrImagesScraper:
                         await f.write(await resp.read())
                         await f.close()
             except aiohttp.ClientConnectionError:
-                warnings.warn(f"Invalid URL recieved. Continuing")
+                warnings.warn("Invalid URL recieved. Continuing")
                 return
             except aiohttp.ClientPayloadError:
-                warnings.warn(f"Encountered Payload error. This is caused due to unacceptable headers. Continuing")
+                warnings.warn("Encountered Payload error. This is caused due to unacceptable headers. Continuing")
                 return
 
     async def _post_request(self, session, query, page, key):
