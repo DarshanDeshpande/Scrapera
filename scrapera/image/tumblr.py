@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup
 
 
 class TumblrImagesScraper:
+    """This implementation is deprecated. You can contribute with your own implementation to keep this scraper alive"""
     def __init__(self):
 
         self.proxies = None
@@ -98,8 +99,8 @@ class TumblrImagesScraper:
                 'more_posts': True}
         if self.proxies:
             for _ in range(len(self.proxies)):
+                proxy = random.choice(self.proxies)
                 try:
-                    proxy = random.choice(self.proxies)
                     resp = await session.post(f'https://www.tumblr.com/search/{query}/post_page/{page}', data=data,
                                   headers=post_headers, proxy=proxy, timeout=3)
                     return await resp.read()
@@ -156,7 +157,7 @@ class TumblrImagesScraper:
 
     def scrape(self, query, num_pages, out_path=None, proxies=None):
         '''
-        query: str, Search term for GIPHY
+        query: str, Search term for Tumblr
         num_pages: int, Number of GIFs to scrape
         out_path: str, Path to output directory
         proxies: list, list of HTTP/Upgradable HTTPS proxies. These proxies are automatically rotated

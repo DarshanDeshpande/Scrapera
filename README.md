@@ -54,6 +54,7 @@ Scrapera is a completely **Chromedriver free** package that provides access to a
 <li>Text
     <ul>
         <li><a href="https://github.com/DarshanDeshpande/Scrapera/blob/master/scrapera/text/amazon.py">Amazon Product Reviews</a></li>
+        <li><a href="https://github.com/DarshanDeshpande/Scrapera/blob/master/scrapera/text/walmart.py">Walmart Product Reviews</a></li>
         <li><a href="https://github.com/DarshanDeshpande/Scrapera/blob/master/scrapera/text/voice_of_america.py">Voice of America News Scraper</a></li>
         <li><a href="https://github.com/DarshanDeshpande/Scrapera/blob/master/scrapera/text/scroll_news.py">Scroll News Scraper</a></li>
         <li><a href="https://github.com/DarshanDeshpande/Scrapera/blob/master/scrapera/text/imdb.py">IMDB Reviews Scraper</a></li>
