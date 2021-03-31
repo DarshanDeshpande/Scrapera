@@ -79,9 +79,9 @@ class AmazonReviewScraper:
                         'x-amazon-s-fallback-url': f'https://www.amazon.com/s?k={query}&page={page}&qid={qid}&ref=sr_pg_2'}
 
         parsed_string = await self._post_response(session, page, query, qid, post_headers)
-        links = list(set('https://amazon.com' + i['href'] for i in
+        links = list({'https://amazon.com' + i['href'] for i in
                          BeautifulSoup(parsed_string.decode().replace('\\', ''), 'lxml').findAll('a', {
-                             'class': 'a-link-normal'}) if re.match(r'/.*/dp/.*/', i['href'])))
+                             'class': 'a-link-normal'}) if re.match(r'/.*/dp/.*/', i['href'])})
         return links
 
     async def _write_to_db(self, author, rating, review, title, cursor, db):
