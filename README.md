@@ -48,7 +48,7 @@ Scrapera is a completely **Chromedriver free** package that provides access to a
     <ul>
         <li><a href="https://github.com/DarshanDeshpande/Scrapera/blob/master/scrapera/image/duckduckgo.py">DuckDuckGo Scraper</a></li>
         <li><a href="https://github.com/DarshanDeshpande/Scrapera/blob/master/scrapera/image/giphy.py">GIPHY Scraper</a></li>
-        <li><a href="https://github.com/DarshanDeshpande/Scrapera/blob/master/scrapera/image/tumblr.py">Tumblr Scraper</a></li>
+        <li><a href="https://github.com/DarshanDeshpande/Scrapera/blob/master/scrapera/image/tumblr.py">Tumblr Scraper</a> (Deprecated)</li>
     </ul>
 </li>
 <li>Text
@@ -59,6 +59,7 @@ Scrapera is a completely **Chromedriver free** package that provides access to a
         <li><a href="https://github.com/DarshanDeshpande/Scrapera/blob/master/scrapera/text/scroll_news.py">Scroll News Scraper</a></li>
         <li><a href="https://github.com/DarshanDeshpande/Scrapera/blob/master/scrapera/text/imdb.py">IMDB Reviews Scraper</a></li>
         <li><a href="https://github.com/DarshanDeshpande/Scrapera/blob/master/scrapera/text/reddit.py">Reddit Scraper</a></li>
+        <li><a href="https://github.com/DarshanDeshpande/Scrapera/blob/master/scrapera/text/medium.py">Medium Scraper</a></li>
     </ul>
 </li>
 <li>Audio
