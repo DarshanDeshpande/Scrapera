@@ -3,6 +3,7 @@ import os
 import random
 import aiohttp
 import aiosqlite
+import warnings
 import pprint
 
 
@@ -162,16 +163,15 @@ class MediumScraper:
 
         if topic is None:
             return await self._post_response_utils(session, global_post_data)
-        else:
-            post_iter_id = ""
-            topic_post_data['variables']['topicSlug'] = topic
-            for i in range(n_posts // 25 if n_posts // 25 else 1):
-                topic_post_data['variables']['feedPagingOptions']['to'] = post_iter_id
-                resp = await self._post_response_utils(session, topic_post_data)
-                if resp['data']['topic'] is None:
-                    raise AssertionError("Topic is invalid, check the medium website url for exact topic name")
-                post_iter_id = resp['data']['topic']['latestPosts']['pagingInfo']['next']['to']
-                response_list.append(resp)
+        post_iter_id = ""
+        topic_post_data['variables']['topicSlug'] = topic
+        for _ in range(n_posts // 25 if n_posts // 25 else 1):
+            topic_post_data['variables']['feedPagingOptions']['to'] = post_iter_id
+            resp = await self._post_response_utils(session, topic_post_data)
+            if resp['data']['topic'] is None:
+                raise AssertionError("Topic is invalid, check the medium website url for exact topic name")
+            post_iter_id = resp['data']['topic']['latestPosts']['pagingInfo']['next']['to']
+            response_list.append(resp)
         return response_list[:n_posts]
 
     async def _post_response_utils(self, session, data_send):
@@ -185,8 +185,9 @@ class MediumScraper:
                         resp = await response.json()
                         return resp
 
-                except Exception as e:
-                    print(e)
+                except(
+                asyncio.TimeoutError, aiohttp.client.ClientProxyConnectionError, aiohttp.client.ClientHttpProxyError,
+                aiohttp.client.ServerDisconnectedError, aiohttp.client.ClientOSError):
                     try:
                         self.proxies.remove(proxy)
                         if not self.proxies:
@@ -526,15 +527,13 @@ class MediumScraper:
         }
 
         full_text = ""
-        try:
-            async with session.post(self.url, headers=self.post_headers, json=content_graphql) as response:
-                assert response.status == 200
-                resp = await response.json()
-                paragraphs = resp['data']['post']['viewerEdge']['fullContent']['bodyModel']['paragraphs']
-                for paragraph in paragraphs:
-                    full_text += str(paragraph['text']).strip() + "\n"
-        except Exception as e:
-            print(e)
+        async with session.post(self.url, headers=self.post_headers, json=content_graphql) as response:
+            assert response.status == 200
+            resp = await response.json()
+            paragraphs = resp['data']['post']['viewerEdge']['fullContent']['bodyModel']['paragraphs']
+            for paragraph in paragraphs:
+                full_text += str(paragraph['text']).strip() + "\n"
+
         return {"text": full_text, "author": author, "link": link}
 
     @staticmethod
@@ -553,7 +552,6 @@ class MediumScraper:
 
             async with aiohttp.ClientSession() as session:
                 try:
-
                     if topic is None:
                         resp = await self._post_response(session, n_posts=n_posts)
                         resp = await self.extract_post_objects_general(session, response=resp, n_posts=n_posts)
