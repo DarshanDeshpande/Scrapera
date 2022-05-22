@@ -53,7 +53,7 @@ class VimeoScraper:
                     title = re.sub(r'''[\W_]+''', '', title)
                     urllib.request.urlretrieve(d['url'],
                                                f"{self.out_path}/{title}-{quality}.mp4" if self.out_path else f"{title}-{quality}.mp4")
-                    print(f"Download completed in {time.time() - start_time}s")
+                    print(f"Download completed in {round(time.time() - start_time, 2)}s")
                     print('-' * 75)
         else:
             raise ValueError(
